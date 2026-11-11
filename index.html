@@ -30,7 +30,7 @@ h2{margin:0 0 12px;font-size:17px}h3{margin:14px 0 8px;font-size:13px;color:var(
 <main><div class="wrap" id="v"></div></main><div id="toast" role="status"></div>
 <script>
 // ===== ISI ALAMAT WEB APP APPS SCRIPT =====
-const API="https://script.google.com/macros/s/AKfycbyvlQZMsPp1wfjAjSWJlCLz93u185qhVIAL6MIC18y3wCKTU0q8ojrxY-Rro21WwYZQXw/exec";
+const API="";
 // ==========================================
 const $=i=>document.getElementById(i),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),T=()=>new Date().toISOString().slice(0,10),fd=d=>d?d.split("-").reverse().join("/"):"";
 const KEL=["Ibu Hamil","Ibu Bersalin","Bayi","Balita","Anak Prasekolah","Anak Sekolah","Remaja","Usia Produktif","Lansia"];
@@ -45,7 +45,7 @@ async function load(){D=(await call("all")).d;show(cur)}
 // ---- logika data
 const umur=(t,on)=>{if(!t)return 0;const a=new Date(t),b=on?new Date(on):new Date();let m=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();if(b.getDate()<a.getDate())m--;return m};
 const umurTxt=t=>{const m=umur(t);return m<24?m+" bln":Math.floor(m/12)+" th"};
-function kel(s){if(s.Status=="Ibu Hamil")return"Ibu Hamil";if(s.Status=="Ibu Bersalin/Nifas")return"Ibu Bersalin";const m=umur(s.TglLahir);return m<12?"Bayi":m<60?"Balita":m<84?"Anak Prasekolah":m<120?"Anak Sekolah":m<228?"Remaja":m<720?"Usia Produktif":"Lansia"}
+function kel(s){if(KEL.includes(s.Status))return s.Status;if(s.Status=="Ibu Bersalin/Nifas")return"Ibu Bersalin";const m=umur(s.TglLahir);return m<12?"Bayi":m<60?"Balita":m<84?"Anak Prasekolah":m<120?"Anak Sekolah":m<228?"Remaja":m<720?"Usia Produktif":"Lansia"}
 const imt=k=>k.BB&&k.TB?+k.BB/Math.pow(+k.TB/100,2):0;
 function gizi(k,s){const i=imt(k);if(!i)return"";if(umur(s.TglLahir,k.Tanggal)<228)return"Cek z-score WHO/KMS";return i<17?"Gizi buruk":i<18.5?"Gizi kurang":i<25?"Gizi baik":"Gizi lebih"}
 const ptm=k=>+k.Sistol>=140||+k.Diastol>=90||+k.GD>=200;
@@ -96,7 +96,7 @@ beranda(){
 sasaran(){
   return`<div class="card"><details><summary class="b" style="display:inline-block">+ Daftarkan sasaran</summary><form id="sf" onsubmit="return false" style="margin-top:12px"><input type="hidden" id="ID"><div class="g">
   <div><label>NIK</label><input id="NIK" maxlength="16" inputmode="numeric"></div><div><label>Nama lengkap</label><input id="Nama"></div><div><label>Tanggal lahir</label><input type="date" id="TglLahir"></div>
-  <div><label>Jenis kelamin</label><select id="JK"><option>L</option><option>P</option></select></div><div><label>Status</label><select id="Status"><option>Normal</option><option>Ibu Hamil</option><option>Ibu Bersalin/Nifas</option></select></div>
+  <div><label>Jenis kelamin</label><select id="JK"><option>L</option><option>P</option></select></div><div><label>Status (kelompok sasaran)</label><select id="Status"><option value="">Pilih status</option>${KEL.map(x=>`<option>${x}</option>`).join("")}</select></div>
   <div><label>Dusun/RT</label><input id="Dusun"></div><div><label>Nama orang tua/wali</label><input id="Ortu"></div><div><label>No. HP</label><input id="HP"></div><div class="full"><label>Alamat</label><input id="Alamat"></div></div>
   <button class="b" style="margin-top:12px" onclick="saveS()">Simpan sasaran</button></form></details></div>
   <div class="card"><div class="row"><div><label>Cari nama/NIK</label><input id="q" oninput="listS()"></div><div><label>Kelompok</label><select id="fk" onchange="listS()"><option value="">Semua</option>${KEL.map(x=>`<option>${x}</option>`).join("")}</select></div></div>
@@ -128,8 +128,8 @@ function listS(){
   const q=($("q").value||"").toLowerCase(),f=$("fk").value;
   $("sb").innerHTML=D.Sasaran.filter(s=>(!q||(s.Nama+s.NIK).toLowerCase().includes(q))&&(!f||kel(s)==f)).map(s=>{const r=riw(s.ID);return`<tr><td><b>${esc(s.Nama)}</b></td><td><span class="tag">${kel(s)}</span></td><td>${umurTxt(s.TglLahir)}</td><td>${esc(s.Dusun)}</td><td>${r.length}</td><td>${r.length?fd(r[r.length-1].Tanggal):"-"}</td><td><button class="b s" onclick="SEL='${s.ID}';show('periksa')">Periksa</button> <button class="b s o" onclick="editS('${s.ID}')">Ubah</button> <button class="b s d" onclick="del('Sasaran','${s.ID}')">Hapus</button></td></tr>`}).join("")||"<tr><td colspan=7>Belum ada data</td></tr>"}
 const FS=["ID","NIK","Nama","TglLahir","JK","Status","Dusun","Alamat","Ortu","HP"];
-async function saveS(){const d={};FS.forEach(k=>d[k]=$(k).value);if(!d.Nama||!d.TglLahir)return toast("Nama dan tanggal lahir wajib diisi");if(d.NIK&&!/^\d{16}$/.test(d.NIK))return toast("NIK harus 16 digit");await run("save",{sheet:"Sasaran",data:d},"Sasaran tersimpan")}
-function editS(id){const s=D.Sasaran.find(x=>x.ID==id);FS.forEach(k=>$(k).value=s[k]||"");document.querySelector("details").open=true;scrollTo(0,0)}
+async function saveS(){const d={};FS.forEach(k=>d[k]=$(k).value);if(!d.Nama||!d.TglLahir||!d.Status)return toast("Nama, tanggal lahir, dan status wajib diisi");if(d.NIK&&!/^\d{16}$/.test(d.NIK))return toast("NIK harus 16 digit");await run("save",{sheet:"Sasaran",data:d},"Sasaran tersimpan")}
+function editS(id){const s=D.Sasaran.find(x=>x.ID==id);FS.forEach(k=>$(k).value=s[k]||"");$("Status").value=kel(s);document.querySelector("details").open=true;scrollTo(0,0)}
 function pick(v){const n=v.split(" | ")[1],s=D.Sasaran.find(x=>x.NIK==n&&n||x.Nama==v.split(" | ")[0]);if(s){SEL=s.ID;show("periksa")}}
 function calc(){const s=D.Sasaran.find(x=>x.ID==SEL),k={BB:$("BB").value,TB:$("TB").value,Tanggal:$("Tanggal").value,Sistol:$("Sistol").value,Diastol:$("Diastol").value,GD:$("GD").value};$("hs").textContent=(imt(k)?"IMT "+imt(k).toFixed(1)+" - "+gizi(k,s):"")+(ptm(k)?"   |   Perlu rujukan/pemeriksaan lanjut (PTM)":"")}
 async function saveK(){const d={SasaranID:SEL};["Tanggal","BB","TB","LK","LP","Sistol","Diastol","GD","Imunisasi","Catatan"].forEach(k=>d[k]=$(k).value);d.Layanan=[...document.querySelectorAll("[name=ly]:checked")].map(x=>x.value).join(", ");if(!d.Tanggal)return toast("Tanggal wajib diisi");if(await run("save",{sheet:"Kunjungan",data:d},"Pemeriksaan tersimpan (kehadiran tercatat)"))show("periksa")}
