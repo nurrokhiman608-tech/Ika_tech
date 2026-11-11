@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KEGIATAN POSYANDU ILP DESA UMPANG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#17332f;--muted:#5d7571;--bg:#f3f6f2;--card:#fff;--line:#d9e3de;--main:#0e6b5e;--main2:#094d43;--warm:#e8a33d;--danger:#b8402f}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--main2);color:#fff;padding:22px 16px 0}
+.wrap{max-width:1100px;margin:0 auto}
+header h1{margin:0;font-size:clamp(20px,4vw,30px);font-weight:800;letter-spacing:.2px}
+header p{margin:4px 0 16px;color:#b9d8d1;font-size:14px}
+nav{display:flex;gap:4px;overflow-x:auto}
+nav button{background:transparent;color:#b9d8d1;border:0;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer;border-radius:10px 10px 0 0;white-space:nowrap}
+nav button.on{background:var(--bg);color:var(--main2)}
+nav button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--warm);outline-offset:1px}
+main{padding:20px 16px 60px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+.full{grid-column:1/-1}
+h2{margin:0 0 14px;font-size:18px}
+h3{margin:18px 0 10px;font-size:14px;color:var(--muted)}
+.btn{background:var(--main);color:#fff;border:0;padding:11px 20px;border-radius:8px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--main2)}
+.btn.ghost{background:#fff;color:var(--main);border:1px solid var(--main)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn.del{background:var(--danger)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+.row>*{flex:1;min-width:150px}.row .btn{flex:0 0 auto}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:#e7efeb;font-weight:700}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;background:#dcefe9;color:var(--main2);font-size:12px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:#fff;border:1px solid var(--line);border-left:6px solid var(--warm);border-radius:10px;padding:12px 14px}
+.stat b{display:block;font-size:28px;line-height:1.1}.stat span{font-size:13px;color:var(--muted)}
+.bar{height:10px;background:#e7efeb;border-radius:6px;overflow:hidden;min-width:120px}.bar i{display:block;height:100%;background:var(--main)}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;display:none;z-index:9}
+.warn{background:#fff6e3;border:1px solid var(--warm);padding:12px;border-radius:8px;font-size:14px;margin-bottom:14px;display:none}
+@media(prefers-reduced-motion:no-preference){section.on{animation:in .2s}}@keyframes in{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>KEGIATAN POSYANDU ILP DESA UMPANG</h1>
+  <p>Pencatatan layanan Posyandu Integrasi Layanan Primer</p>
+  <nav id="nav">
+    <button class="on" data-t="input">Input Kegiatan</button>
+    <button data-t="data">Data Sasaran</button>
+    <button data-t="rekap">Rekap</button>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+<div class="warn" id="warn">Alamat Web App Google Apps Script belum diisi. Buka file ini di editor teks dan isi <b>API_URL</b> di bagian script.</div>
+
+<!-- INPUT -->
+<section id="input" class="on"><div class="card">
+  <h2 id="ftitle">Catat kegiatan baru</h2>
+  <form id="f" autocomplete="off">
+    <input type="hidden" id="ID">
+    <div class="grid">
+      <div><label for="Tanggal">Tanggal kegiatan</label><input type="date" id="Tanggal" required></div>
+      <div><label for="Dusun">Dusun / RT</label><input id="Dusun" placeholder="Contoh: Dusun 1 / RT 02" required></div>
+      <div><label for="Kelompok">Kelompok sasaran</label>
+        <select id="Kelompok" required>
+          <option value="">Pilih kelompok</option><option>Bayi (0-11 bln)</option><option>Balita (12-59 bln)</option><option>Ibu Hamil</option><option>Ibu Nifas/Menyusui</option><option>Remaja</option><option>Dewasa</option><option>Lansia</option>
+        </select></div>
+    </div>
+    <h3>Identitas</h3>
+    <div class="grid">
+      <div><label for="Nama">Nama lengkap</label><input id="Nama" required></div>
+      <div><label for="NIK">NIK</label><input id="NIK" inputmode="numeric" maxlength="16" pattern="\d{16}" title="16 digit angka" placeholder="16 digit"></div>
+      <div><label for="TglLahir">Tanggal lahir</label><input type="date" id="TglLahir"></div>
+      <div><label for="JK">Jenis kelamin</label><select id="JK"><option>L</option><option>P</option></select></div>
+    </div>
+    <h3>Pemeriksaan</h3>
+    <div class="grid">
+      <div><label for="BB">Berat badan (kg)</label><input type="number" step="0.1" id="BB"></div>
+      <div><label for="TB">Tinggi/panjang badan (cm)</label><input type="number" step="0.1" id="TB"></div>
+      <div><label for="LILA">LILA (cm)</label><input type="number" step="0.1" id="LILA"></div>
+      <div><label for="LingkarKepala">Lingkar kepala (cm)</label><input type="number" step="0.1" id="LingkarKepala"></div>
+      <div><label for="Tensi">Tekanan darah (mmHg)</label><input id="Tensi" placeholder="120/80"></div>
+      <div><label for="GulaDarah">Gula darah (mg/dL)</label><input type="number" id="GulaDarah"></div>
+      <div class="full"><label for="Layanan">Layanan diberikan</label><input id="Layanan" placeholder="Contoh: imunisasi campak, vitamin A, PMT, tablet tambah darah"></div>
+      <div class="full"><label for="Catatan">Catatan</label><textarea id="Catatan" rows="2"></textarea></div>
+    </div>
+    <div class="row" style="margin-top:16px"><button class="btn" id="save" type="submit">Simpan data</button><button class="btn ghost" type="button" id="reset">Kosongkan form</button></div>
+  </form>
+</div></section>
+
+<!-- DATA -->
+<section id="data"><div class="card">
+  <h2>Data sasaran</h2>
+  <div class="row">
+    <div><label for="q">Cari nama / NIK</label><input id="q" type="search"></div>
+    <div><label for="fk">Kelompok</label><select id="fk"><option value="">Semua</option></select></div>
+    <div><label for="fb">Bulan</label><input type="month" id="fb"></div>
+    <button class="btn ghost" id="csv">Unduh CSV</button>
+    <button class="btn ghost" id="reload">Muat ulang</button>
+  </div>
+  <div class="tw"><table><thead><tr><th>Tanggal</th><th>Nama</th><th>Kelompok</th><th>Dusun</th><th>BB</th><th>TB</th><th>Tensi</th><th>Gula</th><th>Layanan</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+  <p id="empty" style="color:var(--muted)"></p>
+</div></section>
+
+<!-- REKAP -->
+<section id="rekap">
+  <div class="stats" id="stats"></div>
+  <div class="card"><h2>Jumlah per kelompok sasaran</h2><div class="tw"><table><thead><tr><th>Kelompok</th><th>Jumlah</th><th>Proporsi</th></tr></thead><tbody id="rk"></tbody></table></div></div>
+</section>
+</div></main>
+<div id="toast" role="status"></div>
+
+<script>
+// ====== ISI ALAMAT WEB APP GOOGLE APPS SCRIPT DI SINI ======
+const API_URL = "https://script.google.com/macros/s/AKfycbyvlQZMsPp1wfjAjSWJlCLz93u185qhVIAL6MIC18y3wCKTU0q8ojrxY-Rro21WwYZQXw/exec";
+// ===========================================================
+
+const KEL = ["Bayi (0-11 bln)","Balita (12-59 bln)","Ibu Hamil","Ibu Nifas/Menyusui","Remaja","Dewasa","Lansia"];
+const F = ["Tanggal","Dusun","Nama","NIK","TglLahir","JK","Kelompok","BB","TB","LILA","LingkarKepala","Tensi","GulaDarah","Layanan","Catatan"];
+const $ = id => document.getElementById(id);
+let rows = [];
+
+function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>t.style.display="none",2600)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fmt(d){if(!d)return"";const p=String(d).split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:d}
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button,section").forEach(e=>e.classList.remove("on"));
+  b.classList.add("on");$(b.dataset.t).classList.add("on");
+});
+KEL.forEach(k=>$("fk").insertAdjacentHTML("beforeend",`<option>${k}</option>`));
+$("Tanggal").valueAsDate=new Date();
+
+async function load(){
+  if(!API_URL){$("warn").style.display="block";return}
+  try{const r=await (await fetch(API_URL)).json();rows=r.rows||[];render()}
+  catch(e){toast("Gagal memuat data dari Google Sheets")}
+}
+async function post(body){
+  if(!API_URL){toast("API_URL belum diisi");return null}
+  try{return await (await fetch(API_URL,{method:"POST",body:JSON.stringify(body)})).json()}
+  catch(e){toast("Gagal terhubung ke Google Sheets");return null}
+}
+
+$("f").onsubmit=async e=>{
+  e.preventDefault();
+  const data={};F.forEach(k=>data[k]=$(k).value);
+  const id=$("ID").value;
+  $("save").disabled=true;$("save").textContent="Menyimpan...";
+  const r=await post(id?{action:"update",id,data}:{action:"add",data});
+  $("save").disabled=false;$("save").textContent="Simpan data";
+  if(r&&r.ok){toast(id?"Data diperbarui":"Data tersimpan");clearForm();load()}
+  else if(r)toast(r.error||"Gagal menyimpan");
+};
+function clearForm(){$("f").reset();$("ID").value="";$("Tanggal").valueAsDate=new Date();$("ftitle").textContent="Catat kegiatan baru"}
+$("reset").onclick=clearForm;
+
+function filtered(){
+  const q=$("q").value.toLowerCase(),k=$("fk").value,b=$("fb").value;
+  return rows.filter(r=>(!q||(r.Nama+" "+r.NIK).toLowerCase().includes(q))&&(!k||r.Kelompok===k)&&(!b||(r.Tanggal||"").startsWith(b)))
+    .sort((a,c)=>(c.Tanggal||"").localeCompare(a.Tanggal||""));
+}
+function render(){
+  const d=filtered();
+  $("tb").innerHTML=d.map(r=>`<tr><td>${fmt(r.Tanggal)}</td><td><b>${esc(r.Nama)}</b></td><td><span class="tag">${esc(r.Kelompok)}</span></td><td>${esc(r.Dusun)}</td><td>${esc(r.BB)}</td><td>${esc(r.TB)}</td><td>${esc(r.Tensi)}</td><td>${esc(r.GulaDarah)}</td><td>${esc(r.Layanan)}</td>
+  <td><button class="btn sm ghost" data-e="${r.ID}">Ubah</button> <button class="btn sm del" data-d="${r.ID}">Hapus</button></td></tr>`).join("");
+  $("empty").textContent=d.length?"":"Belum ada data yang cocok. Catat kegiatan di tab Input Kegiatan.";
+  // rekap
+  const b=$("fb").value,src=rows.filter(r=>!b||(r.Tanggal||"").startsWith(b));
+  const tgl=new Set(src.map(r=>r.Tanggal)).size,orang=new Set(src.map(r=>r.NIK||r.Nama)).size;
+  $("stats").innerHTML=`<div class="stat"><b>${src.length}</b><span>Total pelayanan</span></div><div class="stat"><b>${orang}</b><span>Sasaran terlayani</span></div><div class="stat"><b>${tgl}</b><span>Hari kegiatan</span></div>`;
+  const max=Math.max(1,src.length);
+  $("rk").innerHTML=KEL.map(k=>{const n=src.filter(r=>r.Kelompok===k).length;return`<tr><td>${k}</td><td>${n}</td><td><div class="bar"><i style="width:${n/max*100}%"></i></div></td></tr>`}).join("");
+}
+["q","fk","fb"].forEach(i=>$(i).oninput=render);
+$("reload").onclick=load;
+
+$("tb").onclick=async e=>{
+  const ed=e.target.dataset.e,dl=e.target.dataset.d;
+  if(ed){const r=rows.find(x=>x.ID===ed);F.forEach(k=>$(k).value=r[k]||"");$("ID").value=ed;$("ftitle").textContent="Ubah data";document.querySelector('[data-t=input]').click();scrollTo(0,0)}
+  if(dl&&confirm("Hapus data ini? Tindakan ini tidak bisa dibatalkan.")){const r=await post({action:"delete",id:dl});if(r&&r.ok){toast("Data dihapus");load()}}
+};
+$("csv").onclick=()=>{
+  const d=filtered(),q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const csv=[F.map(q).join(",")].concat(d.map(r=>F.map(k=>q(r[k])).join(","))).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv"}));a.download="posyandu-umpang.csv";a.click();
+};
+load();
+</script>
+</body>
+</html>
